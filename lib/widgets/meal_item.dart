@@ -7,9 +7,11 @@ class MealItem extends StatelessWidget {
   const MealItem({
     super.key,
     required this.meal,
+    required this.onSelectMeal
   });
 
   final Meal meal;
+  final void Function(Meal meal) onSelectMeal;
 
   // Methode pour mettre la premier lettre de complexity en majuscule 
   String get complexityText {
@@ -31,7 +33,9 @@ class MealItem extends StatelessWidget {
       clipBehavior: Clip.hardEdge, // Pour forcer son child a etre dans le borderradius 
       elevation: 2,
       child: InkWell(
-        onTap: (){},
+        onTap: (){
+          onSelectMeal(meal);
+        },
         child: Stack(
           children: [
 
