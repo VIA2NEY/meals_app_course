@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:meals_app/models/meal.dart';
 import 'package:meals_app/providers/favorites_provider.dart';
+import 'package:meals_app/providers/filters_provider.dart';
 import 'package:meals_app/providers/meals_provider.dart';
 import 'package:meals_app/screens/categories.dart';
 import 'package:meals_app/screens/filters.dart';
@@ -13,7 +13,7 @@ const kInitialFilters = {
   Filter.glutenfree: false ,
   Filter.lactosefree: false,
   Filter.vegetarian: false ,
-  Filter.vegen: false,
+  Filter.vegan: false,
 };
 
 class TabsScreen extends ConsumerStatefulWidget {
@@ -26,26 +26,7 @@ class TabsScreen extends ConsumerStatefulWidget {
 class _TabsScreenState extends ConsumerState<TabsScreen> {
 
   int _selectedPageIndex = 0;
-  // final List<Meal> _favoriteMeals = [];
-  Map<Filter, bool> _selectedFilter = kInitialFilters;
 
-
-  // void _toogleMealFavoriteStatus(Meal meal){
-  //   final isExisting = _favoriteMeals.contains(meal);
-
-  //   if (isExisting /*== true */) {
-  //     setState(() {
-  //       _favoriteMeals.remove(meal);
-  //       _showInfoMessage("Le repas n'est plus favoris");
-  //     });
-  //   } else {
-  //     setState(() {
-  //       _favoriteMeals.add(meal);
-  //       _showInfoMessage("Le repas est ajouté aux favoris");
-  //     });
-  //   }
-
-  // }
 
   void _selectPage(int index){
     setState(() {
@@ -57,16 +38,12 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
   void _setScreen(String identifier) async {
     Navigator.of(context).pop();
     if (identifier == 'filters') {
-      final result = await Navigator.of(context).push<Map<Filter, bool>>(
+      await Navigator.of(context).push<Map<Filter, bool>>(
         MaterialPageRoute(builder: (ctx){
-          return  FilterScreen(currentFilters: _selectedFilter,);
+          return const FilterScreen();
         })
       );
 
-      setState(() {
-        _selectedFilter = result ?? kInitialFilters; // Si le result est null prend la valeur par defaut kInitialFilters
-      });
-      
     }
   }
 
@@ -75,23 +52,25 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
 
     final meals = ref.watch(mealsprovider);
 
+    final activefilter = ref.watch(filtersProvider);
+
     final availableMeals = meals.where((meal) {
 
       // Si la valeur de la filterScreen(_selectedFilter) a pour valeur Filter.glutenfree = true 
       // et que l'element de la rechercher .where (meal) n'est pas sans glutten (!meal.isGlutenFree)
-      if (_selectedFilter[Filter.glutenfree]! && !meal.isGlutenFree) {
+      if (activefilter[Filter.glutenfree]! && !meal.isGlutenFree) {
         return false; // Donc je ne l'inclus pas 
       }
 
-      if (_selectedFilter[Filter.lactosefree]! && !meal.isLactoseFree) {
+      if (activefilter[Filter.lactosefree]! && !meal.isLactoseFree) {
         return false; // Donc je ne l'inclus pas 
       }
 
-      if (_selectedFilter[Filter.vegetarian]! && !meal.isVegetarian) {
+      if (activefilter[Filter.vegetarian]! && !meal.isVegetarian) {
         return false; // Donc je ne l'inclus pas 
       }
 
-      if (_selectedFilter[Filter.vegen]! && !meal.isVegan) {
+      if (activefilter[Filter.vegan]! && !meal.isVegan) {
         return false; // Donc je ne l'inclus pas 
       }
 
