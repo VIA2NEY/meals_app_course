@@ -7,36 +7,36 @@ class MealDetailsScreen extends ConsumerWidget {
   const MealDetailsScreen({
     super.key,
     required this.meal,
-    // required this.onToggleFavorite,
   });
 
   final Meal meal;
-  // final void Function(Meal meal) onToggleFavorite;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+
+    final favoriteMeals = ref.watch(favoriteMealsProvider);
+
+    bool isFavorite =favoriteMeals.contains(meal);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(meal.title),
         actions: [
           IconButton(
             onPressed: (){
-              // onToggleFavorite(meal);
               final wasAdded = ref.read(
                   favoriteMealsProvider.notifier
                 ).toggleMealFavoriteStatus(meal);
               
-              /*void _showInfoMessage(String message){*/
               ScaffoldMessenger.of(context).clearSnackBars();
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(wasAdded ? "Le repas est ajouté aux favoris" : "Le repas n'est plus favoris")
                 )
               );
-              /*}*/
 
             }, 
-            icon: Icon(Icons.star)
+            icon: Icon(isFavorite ? Icons.star : Icons.star_border)
           )
         ],
       ),
